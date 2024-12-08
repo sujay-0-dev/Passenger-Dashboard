@@ -1,0 +1,331 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Delhi Transportation and Corporation</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    <script src="https://cdn.jsdelivr.net/npm/jsbarcode@3.11.5/dist/JsBarcode.all.min.js"></script>
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+    <div class="sidebar">
+        <h2>TransitAI</h2>
+        <ul>
+            <li><a href="#" data-section="home"><i class="fas fa-home"></i> Home</a></li>
+            <li><a href="#" data-section="booking"><i class="fas fa-ticket"></i> Booking</a></li>
+            <li><a href="#" data-section="payment"><i class="fas fa-credit-card"></i> Payment</a></li>
+            <li><a href="#" data-section="tickets"><i class="fas fa-ticket-alt"></i> Tickets</a></li>
+            <li><a href="#" data-section="profile"><i class="fas fa-user"></i> Profile</a></li>
+        </ul>
+    </div>
+
+    <div class="main-content">
+        <header>
+            <h1>Delhi Transportation and Corporation</h1>
+        </header>
+
+        <!-- Home Section -->
+        <section id="home" class="section active">
+            <div class="search-form">
+                <form id="busSearchForm">
+                    <div class="form-group">
+                        <label for="fromLocation">From:</label>
+                        <select id="fromLocation" required>
+                            <option value="">Select departure location</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label for="toLocation">To:</label>
+                        <select id="toLocation" required>
+                            <option value="">Select arrival location</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label for="travelDate">Date:</label>
+                        <input type="date" id="travelDate" required>
+                    </div>
+                    <button type="submit" class="btn">Search Buses</button>
+                </form>
+            </div>
+            <div id="scheduleResults"></div>
+        </section>
+
+        <!-- Booking Section -->
+        <section id="booking" class="section">
+            <div class="progress-bar">
+                <div class="progress-step active">Passenger Details</div>
+                <div class="progress-step">Seat Selection</div>
+                <div class="progress-step">Contact Details</div>
+                <div class="progress-step">Payment</div>
+            </div>
+
+            <div id="passengerDetails" class="booking-step active">
+                <h2>Passenger Details</h2>
+                <div class="passenger-form">
+                    <div class="form-group">
+                        <label for="passengerName">Name</label>
+                        <input type="text" id="passengerName" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="passengerAge">Age</label>
+                        <input type="number" id="passengerAge" min="1" max="100" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="passengerGender">Gender</label>
+                        <select id="passengerGender" required>
+                            <option value="">Select gender</option>
+                            <option value="male">Male</option>
+                            <option value="female">Female</option>
+                            <option value="other">Other</option>
+                        </select>
+                    </div>
+                    <button id="addPassenger" class="btn">Add Passenger</button>
+                </div>
+                <div id="passengerList" class="passenger-list"></div>
+                <button id="proceedToSeats" class="btn" disabled>Proceed to Seat Selection</button>
+            </div>
+
+            <div id="seatSelection" class="booking-step">
+                <h2>Seat Selection</h2>
+                <div class="seat-layout" id="upperDeck">
+                    <h3>Upper Deck</h3>
+                    <!-- Seats will be generated dynamically -->
+                </div>
+                <div class="seat-layout" id="lowerDeck">
+                    <h3>Lower Deck</h3>
+                    <!-- Seats will be generated dynamically -->
+                </div>
+                <div id="selectedSeats"></div>
+                <button id="confirmSeats" class="btn" disabled>Confirm Seats</button>
+            </div>
+
+            <div id="contactDetails" class="booking-step">
+                <h2>Contact Details</h2>
+                <div class="contact-form">
+                    <div class="form-group">
+                        <label for="email">Email</label>
+                        <input type="email" id="email" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="phone">Phone</label>
+                        <div class="phone-input">
+                            <span>+91</span>
+                            <input type="tel" id="phone" pattern="[0-9]{10}" required>
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label>
+                            <input type="checkbox" id="sendUpdates">
+                            Send booking updates via email and SMS
+                        </label>
+                    </div>
+                </div>
+                <div class="booking-summary">
+                    <h3>Booking Summary</h3>
+                    <div id="summaryDetails"></div>
+                    <div class="price-breakdown">
+                        <div id="fareDetails"></div>
+                        <div id="totalFare"></div>
+                    </div>
+                </div>
+                <button id="proceedToPayment" class="btn">Continue to Payment</button>
+            </div>
+        </section>
+
+        <section id="payment" class="section">
+            <div class="payment-header">
+                <div class="back-button">
+                    <i class="fas fa-arrow-left"></i>
+                </div>
+                <h2>Payment</h2>
+                <div class="payment-timer" id="paymentTimer">10:00</div>
+            </div>
+        
+            <div class="payment-details">
+                <h3>Payment details:</h3>
+                <div class="fare-breakdown">
+                    <div class="fare-section">
+                        <h4>Tickets</h4>
+                        <div id="ticketBreakdown"></div>
+                    </div>
+                    <div class="fare-section">
+                        <h4>Taxes & Fees</h4>
+                        <div id="taxBreakdown"></div>
+                    </div>
+                    <div class="total-section">
+                        <h4>Total</h4><br>
+                        <span id="totalAmount" class="total-amount"></span>
+                    </div>
+                </div><br>
+        
+                <div class="payment-methods">
+                    <h3>Pay with:</h3>
+                    <div class="upi-section">
+                        <div class="upi-header">
+                            <span>Pay via any UPI app</span>
+                        </div>
+                        <div class="upi-apps">
+                            <div class="upi-app" data-app="phonepe">
+                                <img src="phonepe-icon.png" alt="">
+                                <span>PhonePe</span>
+                            </div>
+                            <div class="upi-app" data-app="gpay">
+                                <img src="gpay-icon.png" alt="">
+                                <span>Google Pay</span>
+                            </div>
+                            <div class="upi-app" data-app="">
+                                <img src="razorpay-icon.png" alt="RazorPay">
+                                <span>RazorPay</span>
+                            </div>
+                        </div>
+                        <div class="upi-id-input">
+                            <span>Pay with UPI</span>
+                            <input type="text" id="upiId" placeholder="Enter UPI ID">
+                            <button id="payButton" class="btn pay-button">
+                                Pay ₹<span id="payButtonAmount">0</span>
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+        
+        <!-- Payment Status Screens -->
+        <div id="paymentStatus" class="payment-status-screen">
+            <!-- Processing Screen -->
+            <div id="processingScreen" class="status-screen">
+                <div class="status-icon processing">
+                    <i class="fas fa-clock"></i>
+                </div>
+                <h3>Payment processing</h3>
+                <p>Your payment is processing expecting time delay to reflect on our account. Please wait before making another try!</p>
+                <button class="btn" onclick="goToBookings()">Go to Bookings</button>
+            </div>
+        
+            <!-- Success Screen -->
+            <div id="successScreen" class="status-screen">
+                <div class="status-icon success">
+                    <i class="fas fa-check"></i>
+                </div>
+                <h3>Payment Successful!</h3>
+                <p>Your payment is processed and your ticket is confirmed!</p>
+                <button class="btn" onclick="viewTicket()">View ticket</button>
+            </div>
+        
+            <!-- Failed Screen -->
+            <div id="failedScreen" class="status-screen">
+                <div class="status-icon failed">
+                    <i class="fas fa-times"></i>
+                </div>
+                <h3>Payment Failed</h3>
+                <p>Your payment has failed due to some problem. Please try again later</p>
+                <button class="btn" onclick="goBack()">Go back</button>
+            </div>
+        </div>
+
+        <!-- Tickets Section -->
+        <section id="tickets" class="section">
+            <div class="booking-tabs">
+                <button class="tab active" data-tab="active">Active</button>
+                <button class="tab" data-tab="completed">Completed</button>
+                <button class="tab" data-tab="cancelled">Cancelled</button>
+            </div>
+        
+            <div class="ticket-list" id="activeTickets"></div>
+            <div class="ticket-list" id="completedTickets" style="display: none;"></div>
+            <div class="ticket-list" id="cancelledTickets" style="display: none;"></div>
+        
+            <div class="full-ticket" id="fullTicket">
+                <div class="header">
+                    <button class="back-btn" onclick="closeFullTicket()">
+                        <i class="fas fa-arrow-left"></i>
+                    </button>
+                    <h1>Ticket Details</h1>
+                </div>
+                <div class="ticket-content">
+                    <div class="company-header">
+                        <img src="acela-logo.png" alt="Acela" class="company-logo">
+                        <div class="company-info">
+                            <h3>Acela</h3>
+                            <p>Mercedes Benz Multi-Axle A/C Sleeper (2+1)</p>
+                        </div>
+                    </div>
+                    <div class="journey-details">
+                        <div class="info-row">
+                            <div>
+                                <div class="station">CHENNAI CMBT</div>
+                                <div id="departureTime">Oct 10, 5:40am</div>
+                            </div>
+                            <div style="text-align: right;">
+                                <div class="station">BANGALORE BS</div>
+                                <div id="arrivalTime">Oct 10, 11:15am</div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="passenger-info">
+                        <div class="info-row">
+                            <span>Passengers</span>
+                            <span id="passengerCount">2 Adults</span>
+                        </div>
+                        <div class="info-row">
+                            <span>Seat No.</span>
+                            <span id="seatNumbers">S11, W10</span>
+                        </div>
+                        <div class="info-row">
+                            <span>Ticket No.</span>
+                            <span id="ticketNumber">42WL4P4</span>
+                        </div>
+                        <div class="ticket-status" id="ticketStatus">CONFIRMED</div>
+                    </div>
+                    <div class="barcode-container">
+                        <svg id="barcode"></svg>
+                    </div>
+                    <div class="rest-stops">
+                        <h3>Rest Stops</h3>
+                        <div class="rest-stop-item">
+                            <div class="rest-stop-info">
+                                <i class="fas fa-charging-station rest-stop-icon"></i>
+                                <div>
+                                    <div>Standby Cafe</div>
+                                    <div>7:45AM, Thiruvallur</div>
+                                </div>
+                            </div>
+                            <span>30mins</span>
+                        </div>
+                        <div class="rest-stop-item">
+                            <div class="rest-stop-info">
+                                <i class="fas fa-charging-station rest-stop-icon"></i>
+                                <div>
+                                    <div>World Battery</div>
+                                    <div>9:00AM, Mysore</div>
+                                </div>
+                            </div>
+                            <span>30mins</span>
+                        </div>
+                    </div>
+                    <div class="rating">
+                        <h3>Rate this bus</h3>
+                        <div class="stars">
+                            <span class="star" data-rating="1">★</span>
+                            <span class="star" data-rating="2">★</span>
+                            <span class="star" data-rating="3">★</span>
+                            <span class="star" data-rating="4">★</span>
+                            <span class="star" data-rating="5">★</span>
+                        </div>
+                    </div>
+                </div>
+                <div class="bottom-actions">
+                    <button class="action-btn chat-btn">
+                        <i class="fas fa-comment"></i> Chat with us
+                    </button>
+                    <button class="action-btn cancel-btn" id="cancelTicketBtn">
+                        Cancel Ticket
+                    </button>
+                </div>
+            </div>
+        </section>
+    </div>  
+</body>
+<script src="script.js"></script>
+</html>
